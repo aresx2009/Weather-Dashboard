@@ -1,3 +1,7 @@
+/////
+// OVERVIEW
+/////
+
 // UPON A FRESH, LOCALSTORAGE FREE LOAD OF THE PAGE THE ONLY THINGS ORIGINALLY DISPLAYED
 // ARE THE JUMBOTRON AND THE SEARCH BAR OR
 // ## Bonus
@@ -7,14 +11,12 @@
 // AFTER THE FIRST SEARCH THE INFORMATION ON THE PAGE AND THE INFORMATION IN THE SAVE
 // BUTTONS ARE LOCATED TO BE REPULLED FROM LOCAL STORAGE
 
-// moment.js for the date information? Date for today, and then one for each of the 5 day forcast
-
 // * You will need to hardcode some of the parameters in the API's URL.
 // User input will determine some of the other parameters.
 // * Use `localStorage` to store any persistent data.
 
 /////
-// variables
+// VARIABLES
 /////
 
 // This is our API key.
@@ -27,25 +29,26 @@ var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
 var citiesArray = [];
 
 /////
-// function
+// FUNCTIONS
 /////
 
+/////
 // * Create multiple functions within your application to
 // handle the different parts of the dashboard:
 // * Current conditions
-// * 5-Day Forecast
-// * Search history
-// * UV index
+/////
 
 // ajax for searching for new city to display
 // and setting up a button that is created for each city searched for
 // then displaying the searched for information onto the upper right area
-// after this display area is dynamcially created it is then available to be dynamically
-// updated
 
 function citySearch() {
 	// clear out previous city data
-	$("#r2a").empty();
+	$(".city").empty();
+	$(".temp").empty();
+	$(".humidity").empty();
+	$(".wind").empty();
+	$(".uvIndex").empty();
 
 	// grab new city name and search for its information
 	var city = $("#city-input").val();
@@ -64,11 +67,20 @@ function citySearch() {
 		var cityInfo = response.name;
 		console.log(cityInfo);
 		//   * Date
-		// var currentDate =
+		// WE NEED TO BE PARSING DATE DATA FROM WHAT IS BEING RETURNED TO US
+		// RESPONSE.DT POOPED OUT IN MM/DD/YYYY FORMAT
 		//   * Icon image (visual representation of weather conditions)
 		// Where are we pulling the icons from and how
-
-		// $(".city").append(cityInfo + " (" + date + ") " + weatherIcon);
+		var iconDummy = "http://openweathermap.org/img/wn/";
+		var iconPng = "@2x.png";
+		var iconWeather = response.weather[0].icon;
+		var iconUrl = iconDummy + iconWeather + iconPng;
+		console.log(iconUrl);
+		var iconImg = $("<img>");
+		iconImg.attr("src", iconUrl);
+		$(".city").append(cityInfo + " ");
+		// $(".city").append(currentDate + " ");
+		$(".city").append(iconImg);
 
 		// line two
 		//   * Temperature
@@ -93,11 +105,47 @@ function citySearch() {
 		console.log(oldSpeed);
 		var newSpeed = (oldSpeed * 2.2369).toFixed(2);
 		$(".wind").append("Wind Speed: " + newSpeed + " MPH");
-	});
 
-	//   * UV index
-	// UV index is one of the elements... at what point should it go from green to yellow to red?
+		//   * UV index
+		// PULL LON/LAT INFO REPONSE.COORD.LON AND RESPONSE.COORD.LAT
+		// SEND OVER TO uvIndex() AND TAKE RETURNED VALUE, DISPLAY
+		// SHORTEN VALUE TO TWO DIGIT NUMBER AND COMPARE
+		// IF RETURN IS 0-2 SYLE GREEN
+		// IF 3-5 STYLE YELLOW
+		// IF 6-7 STYLE ORANGE
+		// IF 8-10 STYLE RED
+		// IF 11+ STYLE VIOLET
+	});
 }
+
+/////
+// * Create multiple functions within your application to
+// handle the different parts of the dashboard:
+// * Search history
+/////
+
+// CREATE A FUNCTION THAT LOOKS ALMOST THE SAME AS
+// CITY SEARCH, ONLY CITY = DATA-NAME VALUE ASSIGNED
+// WITH RENDER BUTTONS
+
+/////
+// * Create multiple functions within your application to
+// handle the different parts of the dashboard:
+// * UV index
+/////
+
+// RECIEVES LAT/LON
+// SEARCHES
+// http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
+// RESPONSE.VALUE RETURNED
+
+/////
+// RENDER BUTTONS CREATES NEW BUTTONS EACH TIME A CITY IS
+// SEARCHED FOR, AND ASSIGNS INFORMATION TO THE BUTTONS.
+// HOWEVER, IT PRINTS THEM SIDE BY SIDE CURRENTLY,
+// SHOULD WE USE A LIST CARD GROUP TO CREATE THE TOP
+// TO BOTTOM LOOK?
+/////
 
 function renderButtons() {
 	// Deleting the buttons prior to adding new movies
@@ -118,12 +166,14 @@ function renderButtons() {
 	}
 }
 
+/////
 // * Include a 5-Day Forecast below the current weather conditions.
 // Each day for the 5-Day Forecast should display the following:
 //   * Date
 //   * Icon image (visual representation of weather conditions)
 //   * Temperature
 //   * Humidity
+/////
 
 // ajax for pulling in the data for each of the 5 day forcasts
 // create a variable that is the averaging of each days information to be placed
@@ -131,10 +181,16 @@ function renderButtons() {
 // into the page
 // after this display area is dynamcially created it is then available to be dynamically
 // updated
-
 // all information pulled is then saved to the most recent local storage information and
-// prints it to the screen regardless of being refreshed, recent cities also set to
-// localstorage
+// prints it to the screen regardless of being refreshed
+// NO IDEA HOW TO DISPLAY THESE
+
+/////
+// EVENTS
+/////
+
+// THESE EVENTS WERE MOSTLY COPIED OVER FROM PREVIOUS ACTIVITY EXAMPLES
+// AND WORK TO A CERTAIN EXTENT
 
 $("#add-city").on("click", function(event) {
 	event.preventDefault();
@@ -150,6 +206,17 @@ $("#add-city").on("click", function(event) {
 	// then
 	renderButtons();
 });
+
+// citySearch grabs whatever is still in the search box
+// how do we get it to use .cityName data-name instead
+// for this particular situation
+
+// $(".cityName").on("click", function(event) {
+// 	event.preventDefault();
+
+// 	//pull up the information display
+// 	citySearch();
+// });
 
 $(document).on("click", "#add-city", citySearch);
 

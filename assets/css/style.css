@@ -1,6 +1,10 @@
 /* body {
 } */
 
+.jumbotron {
+	height: 50%;
+}
+
 .r2a {
 	border: 1px solid darkgray;
 }
