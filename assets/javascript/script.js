@@ -23,7 +23,7 @@ var APIKey = "&appid=8c9bb7e0eeb10862d148cd62de471c05";
 var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
 
 // array to add cities to, to be grabbed from after search
-var citiesArray = [];
+var citiesArray = JSON.parse(localStorage.getItem("cities")) || [];
 
 const m = moment();
 
@@ -105,30 +105,9 @@ function citySearch(city) {
 		// PULL LON/LAT INFO REPONSE.COORD.LON AND RESPONSE.COORD.LAT
 		var lon = response.coord.lon;
 		var lat = response.coord.lat;
-		// SEND OVER TO uvIndex() AND TAKE RETURNED VALUE, DISPLAY
+
+		// SEND OVER TO uvIndex()
 		uvIndex(lon, lat);
-		// // should be able to compare float to the numbers, try it out
-		// // then append button with uvFinal printed to it
-		// $(".uvIndex").append("UV Index: ");
-		// var uvBtn = $("<button>").text(uvFinal);
-		// $(".uvIndex").append(uvBtn);
-		// // then style uvFinal button with below
-		// if (uvFinal < 3) {
-		// 	// IF RETURN IS 0-2 SYLE GREEN
-		// 	uvBtn.attr("class", "uvGreen");
-		// } else if (uvFinal < 6) {
-		// 	// IF 3-5 STYLE YELLOW
-		// 	uvBtn.attr("class", "uvYellow");
-		// } else if (uvFinal < 8) {
-		// 	// IF 6-7 STYLE ORANGE
-		// 	uvBtn.attr("class", "uvOrange");
-		// } else if (uvFinal < 11) {
-		// 	// IF 8-10 STYLE RED
-		// 	uvBtn.attr("class", "uvRed");
-		// } else {
-		// 	// IF 11+ STYLE VIOLET
-		// 	uvBtn.attr("class", "uvPurple");
-		// }
 	});
 }
 
@@ -234,85 +213,178 @@ function renderButtons() {
 // prints it to the screen regardless of being refreshed
 // NO IDEA HOW TO DISPLAY THESE
 
-// function fiveDay(city) {
-// 	var fiveFront = "http://api.openweathermap.org/data/2.5/forecast?q="
-// 	var fiveURL = fiveFront + city + APIKey;
-// 	console.log(fiveURL);
+function fiveDay(city) {
+	var fiveFront = "http://api.openweathermap.org/data/2.5/forecast?q=";
+	var fiveURL = fiveFront + city + APIKey;
+	console.log(fiveURL);
 
-// 	$.ajax({
-// 		url: fiveURL,
-// 		method: "GET"
-// 	}).then(function(response) {
-// 		//dates
-// 		response.list[0].dt
-// 		response.list[8].dt
-// 		response.list[16].dt
-// 		response.list[24].dt
-// 		response.list[32].dt
+	//clear out previous data
+	$(".card-text").empty();
+	$(".card-title").empty();
 
-// 		// avg three for temp and humidity
-// 		//day one information
-// 		//icon
-// 		response.list[4].weather.icon
-// 		//temp
-// 		response.list[2].main.temp
-// 		response.list[4].main.temp
-// 		response.list[6].main.temp
-// 		//humidity
-// 		response.list[2].main.humidity
-// 		response.list[4].main.humidity
-// 		response.list[6].main.humidity
+	// var fiveIconsArray = [];
+	// var fiveTempArray = [];
+	// var fiveHumidityArray = [];
 
-// 		//day two info
-// 		//icon
-// 		response.list[12].weather.icon
-// 		//temp
-// 		response.list[10].main.temp
-// 		response.list[12].main.temp
-// 		response.list[14].main.temp
-// 		//humidity
-// 		response.list[10].main.humidity
-// 		response.list[12].main.humidity
-// 		response.list[14].main.humidity
+	$.ajax({
+		url: fiveURL,
+		method: "GET"
+	}).then(function(response) {
+		//dates
 
-// 		//day three info
-// 		//icon
-// 		response.list[20].weather.icon
-// 		//temp
-// 		response.list[18].main.temp
-// 		response.list[20].main.temp
-// 		response.list[22].main.temp
-// 		//humidity
-// 		response.list[18].main.humidity
-// 		response.list[20].main.humidity
-// 		response.list[22].main.humidity
+		var dateOne = moment
+			.unix(response.list[1].dt)
+			.utc()
+			.format("L");
+		$(".dateOne").append(dateOne);
+		var dateTwo = moment
+			.unix(response.list[9].dt)
+			.utc()
+			.format("L");
+		$(".dateTwo").append(dateTwo);
+		var dateThree = moment
+			.unix(response.list[17].dt)
+			.utc()
+			.format("L");
+		$(".dateThree").append(dateThree);
+		var dateFour = moment
+			.unix(response.list[25].dt)
+			.utc()
+			.format("L");
+		$(".dateFour").append(dateFour);
+		var dateFive = moment
+			.unix(response.list[33].dt)
+			.utc()
+			.format("L");
+		$(".dateFive").append(dateFive);
 
-// 		//day four info
-// 		//icon
-// 		response.list[28].weather.icon
-// 		//temp
-// 		response.list[26].main.temp
-// 		response.list[28].main.temp
-// 		response.list[30].main.temp
-// 		//humidity
-// 		response.list[26].main.humidity
-// 		response.list[28].main.humidity
-// 		response.list[30].main.humidity
+		// // avg three for temp and humidity
+		// //day one information
+		// //icon
+		// var iconOne = $("<img>");
+		// var imgOne =
+		// 	"http://openweathermap.org/img/wn/" +
+		// 	response.list[4].weather.icon +
+		// 	"@2x.png";
+		// iconOne.attr("src", imgOne);
+		// $(".iconOne").append(iconOne);
 
-// 		//day five info
-// 		//icon
-// 		response.list[36].weather.icon
-// 		//temp
-// 		response.list[34].main.temp
-// 		response.list[36].main.temp
-// 		response.list[38].main.temp
-// 		//humidity
-// 		response.list[34].main.humidity
-// 		response.list[36].main.humidity
-// 		response.list[38].main.humidity
-// 	}
+		// //day two info
+		// //icon
+		// response.list[12].weather.icon
 
-// }
+		// //day three info
+		// //icon
+		// response.list[20].weather.icon
+
+		// //day four info
+		// //icon
+		// response.list[28].weather.icon
+
+		// //day five info
+		// //icon
+		// response.list[36].weather.icon
+
+		//temp
+		$(".tempOne").append(
+			tempAvg(
+				response.list[2].main.temp,
+				response.list[4].main.temp,
+				response.list[6].main.temp
+			)
+		);
+		$(".tempTwo").append(
+			tempAvg(
+				response.list[10].main.temp,
+				response.list[12].main.temp,
+				response.list[14].main.temp
+			)
+		);
+		$(".tempThree").append(
+			tempAvg(
+				response.list[18].main.temp,
+				response.list[20].main.temp,
+				response.list[22].main.temp
+			)
+		);
+		$(".tempFour").append(
+			tempAvg(
+				response.list[26].main.temp,
+				response.list[28].main.temp,
+				response.list[30].main.temp
+			)
+		);
+		$(".tempFive").append(
+			tempAvg(
+				response.list[34].main.temp,
+				response.list[36].main.temp,
+				response.list[38].main.temp
+			)
+		);
+
+		//humidity
+		$(".humidityOne").append("Humidity: ");
+		$(".humidityOne").append(
+			humidityAvg(
+				response.list[2].main.humidity,
+				response.list[4].main.humidity,
+				response.list[6].main.humidity
+			)
+		);
+		$(".humidityOne").append("%");
+
+		$(".humidityTwo").append("Humidity: ");
+		$(".humidityTwo").append(
+			humidityAvg(
+				response.list[10].main.humidity,
+				response.list[12].main.humidity,
+				response.list[14].main.humidity
+			)
+		);
+		$(".humidityTwo").append("%");
+
+		$(".humidityThree").append("Humidity: ");
+		$(".humidityThree").append(
+			humidityAvg(
+				response.list[18].main.humidity,
+				response.list[20].main.humidity,
+				response.list[22].main.humidity
+			)
+		);
+		$(".humidityThree").append("%");
+
+		$(".humidityFour").append("Humidity: ");
+		$(".humidityFour").append(
+			humidityAvg(
+				response.list[26].main.humidity,
+				response.list[28].main.humidity,
+				response.list[30].main.humidity
+			)
+		);
+		$(".humidityFour").append("%");
+
+		$(".humidityFive").append("Humidity: ");
+		$(".humidityFive").append(
+			humidityAvg(
+				response.list[34].main.humidity,
+				response.list[36].main.humidity,
+				response.list[38].main.humidity
+			)
+		);
+		$(".humidityFive").append("%");
+	});
+}
+
+function tempAvg(x, y, z) {
+	var avgThree = (x + y + z) / 3.0;
+	var avgReturn = ((avgThree - 273.15) * 1.8 + 32).toFixed(0);
+	return avgReturn;
+}
+
+function humidityAvg(x, y, z) {
+	var avgHum = (x + y + z) / 3.0;
+	return avgHum.toFixed(0);
+}
 
 /////
 // EVENTS
@@ -332,11 +404,14 @@ $("#add-city").on("click", function(event) {
 	//push new city into the Array (11/20 unit 9)
 	citiesArray.push(city);
 
+	// add to local storage
+	localStorage.setItem("cities", JSON.stringify(citiesArray));
+
 	// search for the city
 	citySearch(city);
 
 	//give city info to five day forcast cards as well
-	// fiveDay(city);
+	fiveDay(city);
 
 	// then setting up a button that is created for each city searched for
 	renderButtons();
@@ -358,5 +433,5 @@ $(".cityName").on("click", function(event) {
 	citySearch(city);
 
 	//give city info to five day forcast cards as well
-	// fiveDay(city);
+	fiveDay(city);
 });
