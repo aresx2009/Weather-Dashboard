@@ -8,9 +8,6 @@
 // * Use the [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)
 //  to add the user's current location to the initial landing page.
 
-// AFTER THE FIRST SEARCH THE INFORMATION ON THE PAGE AND THE INFORMATION IN THE SAVE
-// BUTTONS ARE LOCATED TO BE REPULLED FROM LOCAL STORAGE
-
 // * You will need to hardcode some of the parameters in the API's URL.
 // User input will determine some of the other parameters.
 // * Use `localStorage` to store any persistent data.
@@ -28,6 +25,8 @@ var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
 // array to add cities to, to be grabbed from after search
 var citiesArray = [];
 
+const m = moment();
+
 /////
 // FUNCTIONS
 /////
@@ -38,11 +37,7 @@ var citiesArray = [];
 // * Current conditions
 /////
 
-// ajax for searching for new city to display
-// and setting up a button that is created for each city searched for
-// then displaying the searched for information onto the upper right area
-
-function citySearch() {
+function citySearch(city) {
 	// clear out previous city data
 	$(".city").empty();
 	$(".temp").empty();
@@ -50,12 +45,10 @@ function citySearch() {
 	$(".wind").empty();
 	$(".uvIndex").empty();
 
-	// grab new city name and search for its information
-	var city = $("#city-input").val();
-
 	var citySearch = queryURL + city + APIKey;
 	console.log(citySearch);
 
+	// ajax for searching for new city to display
 	$.ajax({
 		url: citySearch,
 		method: "GET"
@@ -67,8 +60,10 @@ function citySearch() {
 		var cityInfo = response.name;
 		console.log(cityInfo);
 		//   * Date
-		// WE NEED TO BE PARSING DATE DATA FROM WHAT IS BEING RETURNED TO US
-		// RESPONSE.DT POOPED OUT IN MM/DD/YYYY FORMAT
+		var dateInfo = response.dt;
+		console.log(dateInfo);
+		var currentDate = moment.unix(dateInfo).format("L");
+		console.log("current date" + currentDate);
 		//   * Icon image (visual representation of weather conditions)
 		// Where are we pulling the icons from and how
 		var iconDummy = "http://openweathermap.org/img/wn/";
@@ -79,7 +74,7 @@ function citySearch() {
 		var iconImg = $("<img>");
 		iconImg.attr("src", iconUrl);
 		$(".city").append(cityInfo + " ");
-		// $(".city").append(currentDate + " ");
+		$(".city").append(currentDate + " ");
 		$(".city").append(iconImg);
 
 		// line two
@@ -108,25 +103,34 @@ function citySearch() {
 
 		//   * UV index
 		// PULL LON/LAT INFO REPONSE.COORD.LON AND RESPONSE.COORD.LAT
+		var lon = response.coord.lon;
+		var lat = response.coord.lat;
 		// SEND OVER TO uvIndex() AND TAKE RETURNED VALUE, DISPLAY
-		// SHORTEN VALUE TO TWO DIGIT NUMBER AND COMPARE
-		// IF RETURN IS 0-2 SYLE GREEN
-		// IF 3-5 STYLE YELLOW
-		// IF 6-7 STYLE ORANGE
-		// IF 8-10 STYLE RED
-		// IF 11+ STYLE VIOLET
+		uvIndex(lon, lat);
+		// // should be able to compare float to the numbers, try it out
+		// // then append button with uvFinal printed to it
+		// $(".uvIndex").append("UV Index: ");
+		// var uvBtn = $("<button>").text(uvFinal);
+		// $(".uvIndex").append(uvBtn);
+		// // then style uvFinal button with below
+		// if (uvFinal < 3) {
+		// 	// IF RETURN IS 0-2 SYLE GREEN
+		// 	uvBtn.attr("class", "uvGreen");
+		// } else if (uvFinal < 6) {
+		// 	// IF 3-5 STYLE YELLOW
+		// 	uvBtn.attr("class", "uvYellow");
+		// } else if (uvFinal < 8) {
+		// 	// IF 6-7 STYLE ORANGE
+		// 	uvBtn.attr("class", "uvOrange");
+		// } else if (uvFinal < 11) {
+		// 	// IF 8-10 STYLE RED
+		// 	uvBtn.attr("class", "uvRed");
+		// } else {
+		// 	// IF 11+ STYLE VIOLET
+		// 	uvBtn.attr("class", "uvPurple");
+		// }
 	});
 }
-
-/////
-// * Create multiple functions within your application to
-// handle the different parts of the dashboard:
-// * Search history
-/////
-
-// CREATE A FUNCTION THAT LOOKS ALMOST THE SAME AS
-// CITY SEARCH, ONLY CITY = DATA-NAME VALUE ASSIGNED
-// WITH RENDER BUTTONS
 
 /////
 // * Create multiple functions within your application to
@@ -134,10 +138,45 @@ function citySearch() {
 // * UV index
 /////
 
-// RECIEVES LAT/LON
-// SEARCHES
-// http://api.openweathermap.org/data/2.5/uvi?appid={appid}&lat={lat}&lon={lon}
-// RESPONSE.VALUE RETURNED
+// // RECIEVES LAT/LON
+function uvIndex(lon, lat) {
+	// SEARCHES
+	var indexURL =
+		"http://api.openweathermap.org/data/2.5/uvi?appid=8c9bb7e0eeb10862d148cd62de471c05&lat=";
+	var middle = "&lon=";
+	var indexSearch = indexURL + lat + middle + lon;
+	console.log(indexSearch);
+
+	$.ajax({
+		url: indexSearch,
+		method: "GET"
+	}).then(function(response) {
+		var uvFinal = response.value;
+
+		// should be able to compare float to the numbers, try it out
+		// then append button with uvFinal printed to it
+		$(".uvIndex").append("UV Index: ");
+		var uvBtn = $("<button>").text(uvFinal);
+		$(".uvIndex").append(uvBtn);
+		// then style uvFinal button with below
+		if (uvFinal < 3) {
+			// IF RETURN IS 0-2 SYLE GREEN
+			uvBtn.attr("class", "uvGreen");
+		} else if (uvFinal < 6) {
+			// IF 3-5 STYLE YELLOW
+			uvBtn.attr("class", "uvYellow");
+		} else if (uvFinal < 8) {
+			// IF 6-7 STYLE ORANGE
+			uvBtn.attr("class", "uvOrange");
+		} else if (uvFinal < 11) {
+			// IF 8-10 STYLE RED
+			uvBtn.attr("class", "uvRed");
+		} else {
+			// IF 11+ STYLE VIOLET
+			uvBtn.attr("class", "uvPurple");
+		}
+	});
+}
 
 /////
 // RENDER BUTTONS CREATES NEW BUTTONS EACH TIME A CITY IS
@@ -149,21 +188,31 @@ function citySearch() {
 
 function renderButtons() {
 	// Deleting the buttons prior to adding new movies
-	$("#buttons-view").empty();
+	$(".list-group").empty();
 
 	// Looping through the array of cities
 	for (var i = 0; i < citiesArray.length; i++) {
 		// Then dynamicaly generating buttons for each
-		var a = $("<button>");
-		// Adding a class of movie to our button
+		var a = $("<li>");
+		// Adding a class
 		a.addClass("cityName");
+		a.addClass("list-group-item");
 		// Adding a data-attribute
 		a.attr("data-name", citiesArray[i]);
 		// Providing the initial button text
 		a.text(citiesArray[i]);
 		// Adding the button to the buttons-view div
-		$("#buttons-view").append(a);
+		$(".list-group").append(a);
 	}
+
+	$(".cityName").on("click", function(event) {
+		event.preventDefault();
+
+		var city = $(this).data("name");
+		console.log("prev searched city" + city);
+		//pull up the information display
+		citySearch(city);
+	});
 }
 
 /////
@@ -185,6 +234,86 @@ function renderButtons() {
 // prints it to the screen regardless of being refreshed
 // NO IDEA HOW TO DISPLAY THESE
 
+// function fiveDay(city) {
+// 	var fiveFront = "http://api.openweathermap.org/data/2.5/forecast?q="
+// 	var fiveURL = fiveFront + city + APIKey;
+// 	console.log(fiveURL);
+
+// 	$.ajax({
+// 		url: fiveURL,
+// 		method: "GET"
+// 	}).then(function(response) {
+// 		//dates
+// 		response.list[0].dt
+// 		response.list[8].dt
+// 		response.list[16].dt
+// 		response.list[24].dt
+// 		response.list[32].dt
+
+// 		// avg three for temp and humidity
+// 		//day one information
+// 		//icon
+// 		response.list[4].weather.icon
+// 		//temp
+// 		response.list[2].main.temp
+// 		response.list[4].main.temp
+// 		response.list[6].main.temp
+// 		//humidity
+// 		response.list[2].main.humidity
+// 		response.list[4].main.humidity
+// 		response.list[6].main.humidity
+
+// 		//day two info
+// 		//icon
+// 		response.list[12].weather.icon
+// 		//temp
+// 		response.list[10].main.temp
+// 		response.list[12].main.temp
+// 		response.list[14].main.temp
+// 		//humidity
+// 		response.list[10].main.humidity
+// 		response.list[12].main.humidity
+// 		response.list[14].main.humidity
+
+// 		//day three info
+// 		//icon
+// 		response.list[20].weather.icon
+// 		//temp
+// 		response.list[18].main.temp
+// 		response.list[20].main.temp
+// 		response.list[22].main.temp
+// 		//humidity
+// 		response.list[18].main.humidity
+// 		response.list[20].main.humidity
+// 		response.list[22].main.humidity
+
+// 		//day four info
+// 		//icon
+// 		response.list[28].weather.icon
+// 		//temp
+// 		response.list[26].main.temp
+// 		response.list[28].main.temp
+// 		response.list[30].main.temp
+// 		//humidity
+// 		response.list[26].main.humidity
+// 		response.list[28].main.humidity
+// 		response.list[30].main.humidity
+
+// 		//day five info
+// 		//icon
+// 		response.list[36].weather.icon
+// 		//temp
+// 		response.list[34].main.temp
+// 		response.list[36].main.temp
+// 		response.list[38].main.temp
+// 		//humidity
+// 		response.list[34].main.humidity
+// 		response.list[36].main.humidity
+// 		response.list[38].main.humidity
+// 	}
+
+// }
+
 /////
 // EVENTS
 /////
@@ -203,21 +332,31 @@ $("#add-city").on("click", function(event) {
 	//push new city into the Array (11/20 unit 9)
 	citiesArray.push(city);
 
-	// then
+	// search for the city
+	citySearch(city);
+
+	//give city info to five day forcast cards as well
+	// fiveDay(city);
+
+	// then setting up a button that is created for each city searched for
 	renderButtons();
 });
+
+renderButtons();
 
 // citySearch grabs whatever is still in the search box
 // how do we get it to use .cityName data-name instead
 // for this particular situation
 
-// $(".cityName").on("click", function(event) {
-// 	event.preventDefault();
+$(".cityName").on("click", function(event) {
+	event.preventDefault();
 
-// 	//pull up the information display
-// 	citySearch();
-// });
+	var city = $("data-name").val();
+	console.log("prev searched city" + city);
 
-$(document).on("click", "#add-city", citySearch);
+	//pull up the information display
+	citySearch(city);
 
-renderButtons();
+	//give city info to five day forcast cards as well
+	// fiveDay(city);
+});
