@@ -25,11 +25,6 @@ var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
 // array to add cities to, to be grabbed from after search
 var citiesArray = JSON.parse(localStorage.getItem("cities")) || [];
 
-//on document load i want to grab the last item of the citiesArray
-// or i want to pull the local location ||
-// document.ready null check on citiesArray - then use geoloc
-// if not null grab one at length - one
-
 const m = moment();
 
 /////
@@ -133,6 +128,7 @@ function citySearch(city) {
 /////
 
 // // RECIEVES LAT/LON
+
 function uvIndex(lon, lat) {
 	// SEARCHES
 	var indexURL =
@@ -221,16 +217,6 @@ function renderButtons() {
 //   * Humidity
 /////
 
-// ajax for pulling in the data for each of the 5 day forcasts
-// create a variable that is the averaging of each days information to be placed
-// morning/afternoon/evening
-// into the page
-// after this display area is dynamcially created it is then available to be dynamically
-// updated
-// all information pulled is then saved to the most recent local storage information and
-// prints it to the screen regardless of being refreshed
-// NO IDEA HOW TO DISPLAY THESE
-
 function fiveDay(city) {
 	var fiveFront = "http://api.openweathermap.org/data/2.5/forecast?q=";
 	var fiveURL = fiveFront + city + APIKey;
@@ -271,6 +257,7 @@ function fiveDay(city) {
 			.format("L");
 		$(".dateFive").append(dateFive);
 
+		//icon
 		var iconOne = $("<img>");
 		var iconOneSrc =
 			"http://openweathermap.org/img/wn/" +
@@ -439,8 +426,20 @@ $("#add-city").on("click", function(event) {
 		.val()
 		.trim();
 
-	//push new city into the Array (11/20 unit 9)
-	citiesArray.push(city);
+	//push new city into the Array
+	var containsCity = false;
+
+	if (citiesArray != null) {
+		$(citiesArray).each(function(x) {
+			if (citiesArray[x] === city) {
+				containsCity = true;
+			}
+		});
+	}
+
+	if (containsCity === false) {
+		citiesArray.push(city);
+	}
 
 	// add to local storage
 	localStorage.setItem("cities", JSON.stringify(citiesArray));
