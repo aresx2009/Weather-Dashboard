@@ -25,7 +25,22 @@ var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
 // array to add cities to, to be grabbed from after search
 var citiesArray = JSON.parse(localStorage.getItem("cities")) || [];
 
+//on document load i want to grab the last item of the citiesArray
+// or i want to pull the local location ||
+// document.ready null check on citiesArray - then use geoloc
+// if not null grab one at length - one
+
 const m = moment();
+
+/////
+// ON LOAD
+/////
+
+$(document).ready(function() {
+	var city = citiesArray[citiesArray.length - 1];
+	fiveDay(city);
+	citySearch(city);
+});
 
 /////
 // FUNCTIONS
@@ -189,6 +204,9 @@ function renderButtons() {
 
 		var city = $(this).data("name");
 		console.log("prev searched city" + city);
+
+		//give city info to five day forcast cards as well
+		fiveDay(city);
 		//pull up the information display
 		citySearch(city);
 	});
@@ -222,16 +240,11 @@ function fiveDay(city) {
 	$(".card-text").empty();
 	$(".card-title").empty();
 
-	// var fiveIconsArray = [];
-	// var fiveTempArray = [];
-	// var fiveHumidityArray = [];
-
 	$.ajax({
 		url: fiveURL,
 		method: "GET"
 	}).then(function(response) {
 		//dates
-
 		var dateOne = moment
 			.unix(response.list[1].dt)
 			.utc()
@@ -258,34 +271,49 @@ function fiveDay(city) {
 			.format("L");
 		$(".dateFive").append(dateFive);
 
-		// // avg three for temp and humidity
-		// //day one information
-		// //icon
-		// var iconOne = $("<img>");
-		// var imgOne =
-		// 	"http://openweathermap.org/img/wn/" +
-		// 	response.list[4].weather.icon +
-		// 	"@2x.png";
-		// iconOne.attr("src", imgOne);
-		// $(".iconOne").append(iconOne);
+		var iconOne = $("<img>");
+		var iconOneSrc =
+			"http://openweathermap.org/img/wn/" +
+			response.list[4].weather[0].icon +
+			"@2x.png";
+		console.log("card Icon line 280" + iconOneSrc);
+		iconOne.attr("src", iconOneSrc);
+		$(".iconOne").append(iconOne);
 
-		// //day two info
-		// //icon
-		// response.list[12].weather.icon
+		var iconTwo = $("<img>");
+		var iconTwoSrc =
+			"http://openweathermap.org/img/wn/" +
+			response.list[12].weather[0].icon +
+			"@2x.png";
+		iconTwo.attr("src", iconTwoSrc);
+		$(".iconTwo").append(iconTwo);
 
-		// //day three info
-		// //icon
-		// response.list[20].weather.icon
+		var iconThree = $("<img>");
+		var iconThreeSrc =
+			"http://openweathermap.org/img/wn/" +
+			response.list[20].weather[0].icon +
+			"@2x.png";
+		iconThree.attr("src", iconThreeSrc);
+		$(".iconThree").append(iconThree);
 
-		// //day four info
-		// //icon
-		// response.list[28].weather.icon
+		var iconFour = $("<img>");
+		var iconFourSrc =
+			"http://openweathermap.org/img/wn/" +
+			response.list[28].weather[0].icon +
+			"@2x.png";
+		iconFour.attr("src", iconFourSrc);
+		$(".iconFour").append(iconFour);
 
-		// //day five info
-		// //icon
-		// response.list[36].weather.icon
+		var iconFive = $("<img>");
+		var iconFiveSrc =
+			"http://openweathermap.org/img/wn/" +
+			response.list[36].weather[0].icon +
+			"@2x.png";
+		iconFive.attr("src", iconFiveSrc);
+		$(".iconFive").append(iconFive);
 
 		//temp
+		$(".tempOne").append("Temperature: ");
 		$(".tempOne").append(
 			tempAvg(
 				response.list[2].main.temp,
@@ -293,6 +321,9 @@ function fiveDay(city) {
 				response.list[6].main.temp
 			)
 		);
+		$(".tempOne").append(" °F");
+
+		$(".tempTwo").append("Temperature: ");
 		$(".tempTwo").append(
 			tempAvg(
 				response.list[10].main.temp,
@@ -300,6 +331,9 @@ function fiveDay(city) {
 				response.list[14].main.temp
 			)
 		);
+		$(".tempTwo").append(" °F");
+
+		$(".tempThree").append("Temperature: ");
 		$(".tempThree").append(
 			tempAvg(
 				response.list[18].main.temp,
@@ -307,6 +341,9 @@ function fiveDay(city) {
 				response.list[22].main.temp
 			)
 		);
+		$(".tempThree").append(" °F");
+
+		$(".tempFour").append("Temperature: ");
 		$(".tempFour").append(
 			tempAvg(
 				response.list[26].main.temp,
@@ -314,6 +351,9 @@ function fiveDay(city) {
 				response.list[30].main.temp
 			)
 		);
+		$(".tempFour").append(" °F");
+
+		$(".tempFive").append("Temperature: ");
 		$(".tempFive").append(
 			tempAvg(
 				response.list[34].main.temp,
@@ -321,6 +361,7 @@ function fiveDay(city) {
 				response.list[38].main.temp
 			)
 		);
+		$(".tempFive").append(" °F");
 
 		//humidity
 		$(".humidityOne").append("Humidity: ");
@@ -390,9 +431,6 @@ function humidityAvg(x, y, z) {
 // EVENTS
 /////
 
-// THESE EVENTS WERE MOSTLY COPIED OVER FROM PREVIOUS ACTIVITY EXAMPLES
-// AND WORK TO A CERTAIN EXTENT
-
 $("#add-city").on("click", function(event) {
 	event.preventDefault();
 
@@ -407,31 +445,14 @@ $("#add-city").on("click", function(event) {
 	// add to local storage
 	localStorage.setItem("cities", JSON.stringify(citiesArray));
 
-	// search for the city
-	citySearch(city);
-
 	//give city info to five day forcast cards as well
 	fiveDay(city);
+
+	// search for the city
+	citySearch(city);
 
 	// then setting up a button that is created for each city searched for
 	renderButtons();
 });
 
 renderButtons();
-
-// citySearch grabs whatever is still in the search box
-// how do we get it to use .cityName data-name instead
-// for this particular situation
-
-$(".cityName").on("click", function(event) {
-	event.preventDefault();
-
-	var city = $("data-name").val();
-	console.log("prev searched city" + city);
-
-	//pull up the information display
-	citySearch(city);
-
-	//give city info to five day forcast cards as well
-	fiveDay(city);
-});
