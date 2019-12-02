@@ -76,7 +76,7 @@ function citySearch(city) {
 		console.log("current date" + currentDate);
 		//   * Icon image (visual representation of weather conditions)
 		// Where are we pulling the icons from and how
-		var iconDummy = "http://openweathermap.org/img/wn/";
+		var iconDummy = "https://openweathermap.org/img/wn/";
 		var iconPng = "@2x.png";
 		var iconWeather = response.weather[0].icon;
 		var iconUrl = iconDummy + iconWeather + iconPng;
@@ -132,7 +132,7 @@ function citySearch(city) {
 function uvIndex(lon, lat) {
 	// SEARCHES
 	var indexURL =
-		"http://api.openweathermap.org/data/2.5/uvi?appid=8c9bb7e0eeb10862d148cd62de471c05&lat=";
+		"https://api.openweathermap.org/data/2.5/uvi?appid=8c9bb7e0eeb10862d148cd62de471c05&lat=";
 	var middle = "&lon=";
 	var indexSearch = indexURL + lat + middle + lon;
 	console.log(indexSearch);
@@ -218,7 +218,7 @@ function renderButtons() {
 /////
 
 function fiveDay(city) {
-	var fiveFront = "http://api.openweathermap.org/data/2.5/forecast?q=";
+	var fiveFront = "https://api.openweathermap.org/data/2.5/forecast?q=";
 	var fiveURL = fiveFront + city + APIKey;
 	console.log(fiveURL);
 
@@ -260,7 +260,7 @@ function fiveDay(city) {
 		//icon
 		var iconOne = $("<img>");
 		var iconOneSrc =
-			"http://openweathermap.org/img/wn/" +
+			"https://openweathermap.org/img/wn/" +
 			response.list[4].weather[0].icon +
 			"@2x.png";
 		console.log("card Icon line 280" + iconOneSrc);
@@ -269,7 +269,7 @@ function fiveDay(city) {
 
 		var iconTwo = $("<img>");
 		var iconTwoSrc =
-			"http://openweathermap.org/img/wn/" +
+			"https://openweathermap.org/img/wn/" +
 			response.list[12].weather[0].icon +
 			"@2x.png";
 		iconTwo.attr("src", iconTwoSrc);
@@ -277,7 +277,7 @@ function fiveDay(city) {
 
 		var iconThree = $("<img>");
 		var iconThreeSrc =
-			"http://openweathermap.org/img/wn/" +
+			"https://openweathermap.org/img/wn/" +
 			response.list[20].weather[0].icon +
 			"@2x.png";
 		iconThree.attr("src", iconThreeSrc);
@@ -285,7 +285,7 @@ function fiveDay(city) {
 
 		var iconFour = $("<img>");
 		var iconFourSrc =
-			"http://openweathermap.org/img/wn/" +
+			"https://openweathermap.org/img/wn/" +
 			response.list[28].weather[0].icon +
 			"@2x.png";
 		iconFour.attr("src", iconFourSrc);
@@ -293,7 +293,7 @@ function fiveDay(city) {
 
 		var iconFive = $("<img>");
 		var iconFiveSrc =
-			"http://openweathermap.org/img/wn/" +
+			"https://openweathermap.org/img/wn/" +
 			response.list[36].weather[0].icon +
 			"@2x.png";
 		iconFive.attr("src", iconFiveSrc);
